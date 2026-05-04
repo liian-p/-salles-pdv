@@ -72,7 +72,7 @@ def tela_login():
         usuario = st.text_input("Usuário", placeholder="admin")
         senha   = st.text_input("Senha", type="password", placeholder="••••••")
         if st.button("Entrar", use_container_width=True, type="primary"):
-            if usuario == "admin" and senha == "admin":
+            if usuario == "AnaB" and senha == "12345":
                 st.session_state.logado = True
                 st.rerun()
             else:
