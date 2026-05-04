@@ -67,7 +67,9 @@ def tela_login():
     _, col, _ = st.columns([1, 1.2, 1])
     with col:
         if os.path.exists("logo.png"):
-            st.image("logo.png", width=220)
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c2:
+        st.image("logo.png", use_container_width=True)
         st.markdown("<h2 style='text-align:center;color:#f8dfce'>Acesso ao Sistema</h2>", unsafe_allow_html=True)
         usuario = st.text_input("Usuário", placeholder="admin")
         senha   = st.text_input("Senha", type="password", placeholder="••••••")
