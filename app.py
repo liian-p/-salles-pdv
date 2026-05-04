@@ -284,12 +284,16 @@ def pagina_custos():
     with col_esq:
         with st.container(border=True):
             st.subheader("Registrar Gasto")
-            desc  = st.text_input("Descrição", placeholder="Ex: Insumos, Aluguel, Gás...")
-            valor = st.number_input("Valor (R$)", min_value=0.01, value=50.00, format="%.2f")
+            desc       = st.text_input("Descrição", placeholder="Ex: Creme de leite, Aluguel, Gás...")
+            preco_unit = st.number_input("Valor unitário (R$)", min_value=0.01, value=5.00, format="%.2f")
+            qtd        = st.number_input("Quantidade", min_value=1, value=1, step=1)
+            total_gasto = preco_unit * qtd
+            st.info(f"💰 Total: **R$ {total_gasto:.2f}**")
             if st.button("✅ Salvar Gasto", use_container_width=True, type="primary"):
                 if desc.strip():
-                    Custo.adicionar(desc.strip(), valor)
-                    st.success("Gasto registrado!")
+                    descricao_final = f"{desc.strip()} (x{qtd})" if qtd > 1 else desc.strip()
+                    Custo.adicionar(descricao_final, total_gasto)
+                    st.success(f"Gasto registrado! {qtd}x {desc.strip()} = R$ {total_gasto:.2f}")
                     st.rerun()
                 else:
                     st.warning("Preencha a descrição.")
