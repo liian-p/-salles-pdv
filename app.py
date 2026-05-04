@@ -58,6 +58,8 @@ if "carrinho" not in st.session_state:
     st.session_state.carrinho = []
 if "recibo_bytes" not in st.session_state:
     st.session_state.recibo_bytes = None
+if "confirmar_limpeza" not in st.session_state:
+    st.session_state.confirmar_limpeza = False
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -450,6 +452,49 @@ def pagina_resumo():
         )
     else:
         st.info("Nenhuma venda registrada no período selecionado.")
+
+    # ── Área de limpeza ──────────────────────────────────────────────────────
+    st.divider()
+    with st.expander("🗑️ Limpar Dados", expanded=False):
+        st.warning("⚠️ **Atenção:** Esta ação apaga os dados permanentemente e não pode ser desfeita!")
+
+        op1, op2 = st.columns(2)
+        with op1:
+            limpar_vendas = st.checkbox("Limpar todas as Vendas")
+        with op2:
+            limpar_custos = st.checkbox("Limpar todos os Custos")
+
+        if st.button("🗑️ Limpar Dados Selecionados", type="primary"):
+            if not limpar_vendas and not limpar_custos:
+                st.error("Selecione ao menos uma opção acima.")
+            else:
+                st.session_state.confirmar_limpeza = True
+                st.session_state.limpar_vendas = limpar_vendas
+                st.session_state.limpar_custos = limpar_custos
+
+        if st.session_state.confirmar_limpeza:
+            st.error("**Tem certeza?** Essa ação não pode ser desfeita!")
+            c1, c2 = st.columns(2)
+            with c1:
+                if st.button("✅ Sim, limpar agora", use_container_width=True, type="primary"):
+                    import sqlite3
+                    from database import obter_caminho_banco
+                    conn = sqlite3.connect(obter_caminho_banco())
+                    cur  = conn.cursor()
+                    if st.session_state.get("limpar_vendas"):
+                        cur.execute("DELETE FROM vendas")
+                        cur.execute("DELETE FROM itens_venda")
+                    if st.session_state.get("limpar_custos"):
+                        cur.execute("DELETE FROM custos")
+                    conn.commit()
+                    conn.close()
+                    st.session_state.confirmar_limpeza = False
+                    st.success("✅ Dados apagados com sucesso!")
+                    st.rerun()
+            with c2:
+                if st.button("❌ Cancelar", use_container_width=True):
+                    st.session_state.confirmar_limpeza = False
+                    st.rerun()
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
